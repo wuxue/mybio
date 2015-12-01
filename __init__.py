@@ -1,10 +1,12 @@
 #-*- coding:gb2312 -*-
 
-__all__ = ['Esdata', 'getfile', 'write',]
 
 from glob import glob
 from collections import defaultdict
 import os
+
+from mybio.combat import combat
+from mybio.enrich import analysis
 
 def write(data,file = None):
     if not file:
@@ -12,17 +14,15 @@ def write(data,file = None):
         file = 'Result(%s).txt'%datetime.datetime.now().strftime('%H%M%S')
     if '\\' in file:
         d, name = os.path.split(file)
-        print('%s saved to dir(%s)!'%(name, d))
         try:
-            os.mkdir(d)
+            os.makedirs(d)
         except:
             pass
+        print('%s saved to dir(%s)!'%(name, d))
     else:
         print('%s saved to current dir!'%file)    
     with open(file, 'w') as da:
-        da.writelines(data)
-        
-        
+        da.writelines(data)     
 
 class Esdata():
 
@@ -58,9 +58,6 @@ class Esdata():
     @staticmethod
     def gene(self):
         return self.gdict.keys()
-
-class SearchFileError(Exception):
-    pass
 
 def getfile(m):
 #m is search pattern.Example:search some file include 'mRNA',

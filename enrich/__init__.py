@@ -1,1 +1,1 @@
-from .enrichment import analysis
+from mybio.enrich.enrichment import analysis
