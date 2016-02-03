@@ -1,8 +1,9 @@
 #-*- coding:gb2312 -*-
 
+
 def df2html(df, fgname, bgname, tar):
     db = 'KEGG' if bgname.startswith('KEGG') else 'GO'
-    
+
     head = '''
     <html>
     <head>
@@ -98,7 +99,7 @@ def df2html(df, fgname, bgname, tar):
     </table>
     <br>
     '''.format(fgname, bgname)
-    
+
     tail = '''
     <p>..........................................................................................................................</p>
     <td style='font-weight: 400; font-size: 10pt;vertical-align: middle;' height='340'><small>
@@ -156,9 +157,8 @@ def df2html(df, fgname, bgname, tar):
     This file was produced by <a target='_blank' href='http://www.oebiotech.com' style='text-decoration: none'>
     <font size='3'>OE Biotech AnalysisTeam </font></a> based on %s annotations updated on 2015.
     </body>
-    </html>'''%db
-    
-    
+    </html>''' % db
+
     table = '''<p><b>Terms</b>(Sorted by pvalue)</p>
     <table border='1' id='table2' style='border-collapse: collapse' bordercolor='#808080'>
     <tr>
@@ -181,9 +181,8 @@ def df2html(df, fgname, bgname, tar):
     <td align='center' width='100'><b>P-value</b></td>
     <td align='center' width='100'><b>FDR_bh</b></td>
     </tr>'''
-    
-    
-    for i,(index, row) in enumerate(df.iterrows()):
+
+    for i, (index, row) in enumerate(df.iterrows()):
         table += '''
         <tr>
         <td align='center' width='45'><font size='3'>%i</font></td>
@@ -196,10 +195,19 @@ def df2html(df, fgname, bgname, tar):
         <td align='center' width='70'><font size='3'>%.2f</font></td>
         <td align='center' width='70'><font size='3'>%.2G</font></td>
         <td align='center' width='70'><font size='3'>%.2G</font></td>
-        </tr>'''%(i, row.Term_ID, row.Term_url, row.Term_description, row.ListHit, row.ListTotal, row.PopHit, row.PopTotal,
-                  row.FoldEnrichment, row.P_value, row.FDR_bh)
-        
+        </tr>''' % (i,
+                    row.Term_ID,
+                    row.Term_url,
+                    row.Term_description,
+                    row.ListHit,
+                    row.ListTotal,
+                    row.PopHit,
+                    row.PopTotal,
+                    row.FoldEnrichment,
+                    row.P_value,
+                    row.FDR_bh)
+
     table += '</table>'
-    with open(r'%s\%s\%s-%s.html'%(tar,fgname, fgname, bgname), 'w') as data:
+    with open(r'%s\%s\%s-%s.html' % (tar, fgname, fgname, bgname), 'w') as data:
         data.write(head + table + tail)
     print(fgname, bgname, 'HTML OK')

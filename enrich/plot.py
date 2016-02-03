@@ -9,16 +9,18 @@ import os
 import matplotlib.pylab as plt
 #
 
+
 def _getTerm(d1, d2, bg):
     if bg == 'KEGG':
         return d1.tolist()
     else:
         dd = [s1 if len(s1) <= 80 else s2 for s1, s2 in zip(d1, d2)]
         return dd
-            
-def plmyfig(df, bgname, dirname, tar, count = 10):
+
+
+def plmyfig(df, bgname, dirname, tar, count=10):
 #plot fig!
-    print("Starting Plot %s %s"%(dirname, bgname))
+    print("Starting Plot %s %s" % (dirname, bgname))
     if len(df) > count:
             df = df.head(count)
     pos = plt.arange(len(df)) + 0.5
@@ -26,8 +28,8 @@ def plmyfig(df, bgname, dirname, tar, count = 10):
     xs = [float(n) for n in df['"-log10(pvalue)"']]
     ytick.reverse()
     xs.reverse()
-    plt.barh(pos, xs, align = 'center', height = 0.5, alpha = 0.8, color = 'k')
-    plt.yticks(pos, ytick, size = 'x-small')
+    plt.barh(pos, xs, align='center', height=0.5, alpha=0.8, color='k')
+    plt.yticks(pos, ytick, size='x-small')
     plt.xlabel('$-Log10(pValue)$')
     plt.title('%s'%bgname)
     ax = plt.gca()
@@ -39,7 +41,7 @@ def plmyfig(df, bgname, dirname, tar, count = 10):
         plt.tight_layout()
     except ValueError:
         pass
-    plt.savefig(os.path.join(tar, dirname, dirname + '_' + bgname + '.png'), dpi = 300)
+    plt.savefig(os.path.join(tar, dirname, dirname + '_' + bgname + '.png'), dpi=300)
     plt.close()
 ################################################################################
 ## Create Custom Color Gradients #
@@ -259,5 +261,3 @@ def plmyfig(df, bgname, dirname, tar, count = 10):
 #        df.to_excel(r'%s\%s.xlsx'%(path,ncrna.tar))
 #        del df, res
 #        
-
-        
