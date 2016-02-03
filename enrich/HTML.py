@@ -195,19 +195,12 @@ def df2html(df, fgname, bgname, tar):
         <td align='center' width='70'><font size='3'>%.2f</font></td>
         <td align='center' width='70'><font size='3'>%.2G</font></td>
         <td align='center' width='70'><font size='3'>%.2G</font></td>
-        </tr>''' % (i,
-                    row.Term_ID,
-                    row.Term_url,
-                    row.Term_description,
-                    row.ListHit,
-                    row.ListTotal,
-                    row.PopHit,
-                    row.PopTotal,
-                    row.FoldEnrichment,
-                    row.P_value,
-                    row.FDR_bh)
+        </tr>''' % (i, row.Term_ID, row.Term_url, row.Term_description,
+                    row.ListHit, row.ListTotal, row.PopHit, row.PopTotal,
+                    row.FoldEnrichment, row.P_value, row.FDR_bh)
 
     table += '</table>'
-    with open(r'%s\%s\%s-%s.html' % (tar, fgname, fgname, bgname), 'w') as data:
+    with open(r'%s\%s\%s-%s.html' %
+              (tar, fgname, fgname, bgname), 'w') as data:
         data.write(head + table + tail)
     print(fgname, bgname, 'HTML OK')

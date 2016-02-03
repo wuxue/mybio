@@ -28,7 +28,8 @@ def geturl(name, term, gene, generegulation=None):
     color = {'up': 'red', 'down': 'green', 'other': 'yellow'}
     if name.startswith('KEGG'):
         try:
-            url1 = 'http://www.kegg.jp/kegg-bin/show_pathway?%s/' % (term.split(':')[1])
+            url1 = 'http://www.kegg.jp/kegg-bin/show_pathway?%s/' % (
+                term.split(':')[1])
         except IndexError:
             return ''
         res = []
@@ -47,8 +48,17 @@ def geturl(name, term, gene, generegulation=None):
         return url
 
 
-def enrichment(genes, popfile, fgname, generegulation=None, myfilter=[5, 2000],
-               org='hsa', go=None, kegg=None, pvalue=0.1, anno=None, **kwargs):
+def enrichment(genes,
+               popfile,
+               fgname,
+               generegulation=None,
+               myfilter=[5, 2000],
+               org='hsa',
+               go=None,
+               kegg=None,
+               pvalue=0.1,
+               anno=None,
+               **kwargs):
     """富集分析主程序
 
     Parameters
@@ -66,10 +76,13 @@ def enrichment(genes, popfile, fgname, generegulation=None, myfilter=[5, 2000],
     genes:差异基因list
     """
     dbname = os.path.basename(popfile)[:-4]
-    head = ('Term_ID\tTerm_description\tTerm_url\tListHit\tListTotal\tPopHit\tPopTotal'
-            '\tFoldEnrichment\tGenes\tGeneSymbols\tP_value\t -log10(pvalue)').split('\t')
+    head = (
+        'Term_ID\tTerm_description\tTerm_url\tListHit\tListTotal\tPopHit\tPopTotal'
+        '\tFoldEnrichment\tGenes\tGeneSymbols\tP_value\t -log10(pvalue)'
+    ).split('\t')
     #数据库中的基因
-    allgenes = {n.split('\t')[0]: n.strip().split('\t')[1] for n in open(popfile)}
+    allgenes = {n.split('\t')[0]: n.strip().split('\t')[1]
+                for n in open(popfile)}
     #差异基因在数据库中的基因
     genes = [n.strip() for n in genes]
     listgenes = {n: allgenes.get(n) for n in genes if allgenes.get(n)}
@@ -107,17 +120,24 @@ def enrichment(genes, popfile, fgname, generegulation=None, myfilter=[5, 2000],
     HTML.df2html(df, fgname, dbname, tar)
 
 
-def analysis(genes, fg, generegulation=None, myfilter=5, org='hsa', bgfiles=None,
+def analysis(genes,
+             fg,
+             generegulation=None,
+             myfilter=5,
+             org='hsa',
+             bgfiles=None,
              creatdir=True):
     if not bgfiles:
         pkgpath = mybio.__path__[0]
         bgfiles = glob(os.path.join(pkgpath, 'data', org, '*.txt'))
-        anno = pickle.load(open(os.path.join(pkgpath, 'data', org, 'anno.pkl'), 'rb'))
+        anno = pickle.load(open(
+            os.path.join(pkgpath, 'data', org, 'anno.pkl'), 'rb'))
     else:
         bgfiles = glob(r'%s\*.txt' % bgfiles)
         anno = glob(r'%s\anno' % bgfiles)[0]
         assert anno, "注释文件不存在"
-        anno = {n.split('\t')[0]: n.split('\t'[1].strip()) for n in open(anno)}
+        anno = {n.split('\t')[0]: n.split('\t' [1].strip())
+                for n in open(anno)}
 
     print(fg, 'starting...')
     if creatdir:
@@ -134,11 +154,18 @@ def analysis(genes, fg, generegulation=None, myfilter=5, org='hsa', bgfiles=None
         print('文件夹已存在！')
     for popfile in bgfiles:
         try:
-            enrichment(genes, popfile, fg, generegulation=generegulation,
-                       myfilter=myfilter, org=org, go=go, kegg=kegg,
+            enrichment(genes,
+                       popfile,
+                       fg,
+                       generegulation=generegulation,
+                       myfilter=myfilter,
+                       org=org,
+                       go=go,
+                       kegg=kegg,
                        anno=anno)
         except AssertionError:
-            print('%s without %s annotation!' % (fg, os.path.basename(popfile)))
+            print('%s without %s annotation!' %
+                  (fg, os.path.basename(popfile)))
     print(fg, 'End..')
 
 
