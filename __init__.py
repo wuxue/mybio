@@ -47,7 +47,11 @@ class Esdata():
                 self.gdict[tarid].append(pid)
                 
     def get(self,tarid):
-    
+        if isinstance(tarid, (list, tuple, set)):
+            res = [self.head]
+            for tar in tarid:
+                res.extend(self.get(tar))
+            return res
         res = self.gdict.get(tarid.strip())
         if res:
             return [self.pdict.get(pid) for pid in res]
