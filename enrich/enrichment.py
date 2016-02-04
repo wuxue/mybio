@@ -29,7 +29,8 @@ def geturl(name, term, gene, generegulation=None):
     color = {'up': 'red', 'down': 'green', 'other': 'yellow'}
     if name.startswith('KEGG'):
         try:
-            url1 = 'http://www.kegg.jp/kegg-bin/show_pathway?%s/' % (term.split(':')[1])
+            url1 = 'http://www.kegg.jp/kegg-bin/show_pathway?%s/' % (
+                term.split(':')[1])
         except IndexError:
             return ''
         res = []
@@ -48,8 +49,17 @@ def geturl(name, term, gene, generegulation=None):
         return url
 
 
-def enrichment(genes, popfile, fgname, generegulation=None, myfilter=[5, 2000],
-               org='hsa', go=None, kegg=None, pvalue=0.1, anno=None, **kwargs):
+def enrichment(genes,
+               popfile,
+               fgname,
+               generegulation=None,
+               myfilter=[5, 2000],
+               org='hsa',
+               go=None,
+               kegg=None,
+               pvalue=0.1,
+               anno=None,
+               **kwargs):
     """富集分析主程序
 
     Parameters
@@ -67,10 +77,13 @@ def enrichment(genes, popfile, fgname, generegulation=None, myfilter=[5, 2000],
     genes:差异基因list
     """
     dbname = os.path.basename(popfile)[:-4]
-    head = ('Term_ID\tTerm_description\tTerm_url\tListHit\tListTotal\tPopHit\tPopTotal'
-            '\tFoldEnrichment\tGenes\tGeneSymbols\tP_value\t -log10(pvalue)').split('\t')
+    head = (
+        'Term_ID\tTerm_description\tTerm_url\tListHit\tListTotal\tPopHit\tPopTotal'
+        '\tFoldEnrichment\tGenes\tGeneSymbols\tP_value\t -log10(pvalue)'
+    ).split('\t')
     #数据库中的基因
-    allgenes = {n.split('\t')[0]: n.strip().split('\t')[1] for n in open(popfile)}
+    allgenes = {n.split('\t')[0]: n.strip().split('\t')[1]
+                for n in open(popfile)}
     #差异基因在数据库中的基因
     listgenes = {n: allgenes.get(n) for n in genes if allgenes.get(n)}
     if len(listgenes) == 0:

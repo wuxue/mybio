@@ -8,7 +8,6 @@ import os
 #import numpy as np
 import matplotlib.pylab as plt
 import logging
-
 def _getTerm(d1, d2, bg):
     if bg == 'KEGG':
         return d1.tolist()
@@ -19,6 +18,11 @@ def _getTerm(d1, d2, bg):
 def plmyfig(df, bgname, dirname, tar, count = 10):
 #plot fig!
     logging.info("Starting Plot %s %s"%(dirname, bgname))
+
+
+def plmyfig(df, bgname, dirname, tar, count=10):
+    #plot fig!
+    print("Starting Plot %s %s" % (dirname, bgname))
     if len(df) > count:
         df = df.head(count)
     pos = plt.arange(len(df)) + 0.5
@@ -29,7 +33,7 @@ def plmyfig(df, bgname, dirname, tar, count = 10):
     plt.barh(pos, xs, align = 'center', height = 0.5, alpha = 1, color='orange')
     plt.yticks(pos, ytick, size = 'x-small')
     plt.xlabel('$-Log10(pValue)$')
-    plt.title('%s'%bgname)
+    plt.title('%s' % bgname)
     ax = plt.gca()
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
@@ -260,6 +264,4 @@ def plmyfig(df, bgname, dirname, tar, count = 10):
 #        df = pd.DataFrame(res, columns = name1 + head)
 #        df.to_excel(r'%s\%s.xlsx'%(path,ncrna.tar))
 #        del df, res
-#        
-
-        
+#
