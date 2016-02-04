@@ -11,6 +11,7 @@ from mybio.enrich import HTML
 from mybio.enrich import plot
 import pickle
 import mybio
+import logging
 
 __all__ = ['analysis']
 
@@ -71,9 +72,19 @@ def enrichment(genes, popfile, fgname, generegulation=None, myfilter=[5, 2000],
     #数据库中的基因
     allgenes = {n.split('\t')[0]: n.strip().split('\t')[1] for n in open(popfile)}
     #差异基因在数据库中的基因
-    genes = [n.strip() for n in genes]
     listgenes = {n: allgenes.get(n) for n in genes if allgenes.get(n)}
-    print('差异基因共计%d个，其中%d个在%s数据库中有注释。' % (len(genes), len(listgenes), dbname))
+    if len(listgenes) == 0:
+        logging.warn(u'差异基因在%s数据库中没有注释' % dbname)
+        try:
+            dbid = kwargs['iddb']
+            genes = [dbid.get(n) for n in genes if dbid.get(n)]
+            listgenes = {n: allgenes.get(n) for n in genes if allgenes.get(n)}
+            logging.info('经过ID转换后共计%d个基因转换成功！' % len(listgenes))
+        except Exception as e:
+            logging.warn('ID转换不成功，error:%s' % e)
+            raise ValueError
+    else:
+        logging.info('%d个差异基因在%s数据库中有注释。' % (len(listgenes), dbname))
     poptotal, listtotal = len(allgenes), len(listgenes)
     popterms, listterms = count(allgenes), count(listgenes)
     data = []
@@ -94,7 +105,10 @@ def enrichment(genes, popfile, fgname, generegulation=None, myfilter=[5, 2000],
         line = (term, anno[term], url, listhit, listtotal, pophit, poptotal,
                 oddsratio, ';'.join(gene), ';'.join(genesy), p_value, str(vv))
         data.append(line)
-    assert len(data) != 0
+    if len(data) == 0:
+        logging.debug('Pvalue计算过程没有出结果！')
+        raise ValueError('Pvalue计算不出结果')
+
     df = pd.DataFrame(data, columns=head)
     df = df.sort_values(by='P_value')
     fdr = df['P_value']
@@ -108,38 +122,47 @@ def enrichment(genes, popfile, fgname, generegulation=None, myfilter=[5, 2000],
 
 
 def analysis(genes, fg, generegulation=None, myfilter=5, org='hsa', bgfiles=None,
-             creatdir=True):
+             creatdir=True, log='analysis'):
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s %(filename)s %(levelname)s %(message)s',
+                        filename='%s.log' % log, filemode='w+')
     if not bgfiles:
         pkgpath = mybio.__path__[0]
         bgfiles = glob(os.path.join(pkgpath, 'data', org, '*.txt'))
         anno = pickle.load(open(os.path.join(pkgpath, 'data', org, 'anno.pkl'), 'rb'))
+        try:
+            idconventdb = {n.split('\t')[0]:n.strip().split('\t')[1]
+                           for n in open(os.path.join(pkgpath, 'data', org, 'iddb'))}
+        except FileNotFoundError:
+            idconventdb = {}
     else:
         bgfiles = glob(r'%s\*.txt' % bgfiles)
         anno = glob(r'%s\anno' % bgfiles)[0]
-        assert anno, "注释文件不存在"
+        assert anno, logging.info("注释文件不存在")
         anno = {n.split('\t')[0]: n.split('\t'[1].strip()) for n in open(anno)}
-
-    print(fg, 'starting...')
+    n1 = len(genes)
+    genes = set([n.strip() for n in genes])
+    logging.info(fg+'starting...用于富集分析的基因共计%d个,删除重复后剩余%d' % (n1, len(genes)))
     if creatdir:
         go, kegg = 'GO Enrichment', 'KEGG Enrichment'
         try:
             os.mkdir(go)
             os.mkdir(kegg)
-        except FileExistsError:
-            pass
+        except FileExistsError as e:
+            logging.debug(e)
     try:
         os.mkdir(os.path.join(go, fg.strip()))
         os.mkdir(os.path.join(kegg, fg.strip()))
-    except FileExistsError:
-        print('文件夹已存在！')
+    except FileExistsError as e:
+        logging.debug(e)
     for popfile in bgfiles:
         try:
             enrichment(genes, popfile, fg, generegulation=generegulation,
                        myfilter=myfilter, org=org, go=go, kegg=kegg,
-                       anno=anno)
-        except AssertionError:
-            print('%s without %s annotation!' % (fg, os.path.basename(popfile)))
-    print(fg, 'End..')
+                       anno=anno, iddb=idconventdb)
+        except (AssertionError,ValueError) as e:
+            logging.warn('%s without %s annotation! erroe:%s' % (fg, os.path.basename(popfile), e))
+    logging.info(fg+'End..')
 
 
 if __name__ == "__main__":

@@ -1,4 +1,6 @@
 #-*- coding:gb2312 -*-
+import logging
+
 
 def df2html(df, fgname, bgname, tar):
     db = 'KEGG' if bgname.startswith('KEGG') else 'GO'
@@ -202,4 +204,4 @@ def df2html(df, fgname, bgname, tar):
     table += '</table>'
     with open(r'%s\%s\%s-%s.html'%(tar,fgname, fgname, bgname), 'w') as data:
         data.write(head + table + tail)
-    print(fgname, bgname, 'HTML OK')
+    logging.info(fgname + bgname + 'HTML OK')

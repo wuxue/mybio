@@ -7,7 +7,7 @@
 import os
 #import numpy as np
 import matplotlib.pylab as plt
-#
+import logging
 
 def _getTerm(d1, d2, bg):
     if bg == 'KEGG':
@@ -18,15 +18,15 @@ def _getTerm(d1, d2, bg):
             
 def plmyfig(df, bgname, dirname, tar, count = 10):
 #plot fig!
-    print("Starting Plot %s %s"%(dirname, bgname))
+    logging.info("Starting Plot %s %s"%(dirname, bgname))
     if len(df) > count:
-            df = df.head(count)
+        df = df.head(count)
     pos = plt.arange(len(df)) + 0.5
     ytick = _getTerm(df['Term_description'], df['Term_ID'], bgname)
-    xs = [float(n) for n in df['"-log10(pvalue)"']]
+    xs = [float(n) for n in df[' -log10(pvalue)']]
     ytick.reverse()
     xs.reverse()
-    plt.barh(pos, xs, align = 'center', height = 0.5, alpha = 0.8, color = 'k')
+    plt.barh(pos, xs, align = 'center', height = 0.5, alpha = 1, color='orange')
     plt.yticks(pos, ytick, size = 'x-small')
     plt.xlabel('$-Log10(pValue)$')
     plt.title('%s'%bgname)
@@ -39,7 +39,9 @@ def plmyfig(df, bgname, dirname, tar, count = 10):
         plt.tight_layout()
     except ValueError:
         pass
-    plt.savefig(os.path.join(tar, dirname, dirname + '_' + bgname + '.png'), dpi = 300)
+    filename = os.path.join(tar, dirname, dirname + '_' + bgname)
+    plt.savefig(filename + '.png', dpi = 72)
+    plt.savefig(filename + '.pdf')
     plt.close()
 ################################################################################
 ## Create Custom Color Gradients #
