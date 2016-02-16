@@ -8,7 +8,8 @@ import os
 from mybio.combat import combat
 from mybio.enrich import analysis
 
-def write(data,file = None):
+
+def write(data, file=None):
     if not file:
         import datetime
         file = 'Result(%s).txt'%datetime.datetime.now().strftime('%H%M%S')
@@ -16,7 +17,7 @@ def write(data,file = None):
         d, name = os.path.split(file)
         try:
             os.makedirs(d)
-        except:
+        except FileExistsError:
             pass
         print('%s saved to dir(%s)!'%(name, d))
     else:
@@ -24,10 +25,10 @@ def write(data,file = None):
     with open(file, 'w') as da:
         da.writelines(data)     
 
-class Esdata():
 
-    def __init__(self, file, tarindex = None, sep='\t'):
-    
+class Esdata:
+
+    def __init__(self, file, tarindex=None, sep='\t'):
         self.name = os.path.basename(file)
         self.pdict = {n.split('\t')[0]:n for n in open(file)}
         self.gdict = defaultdict(list)
@@ -63,16 +64,3 @@ class Esdata():
     def gene(self):
         return self.gdict.keys()
 
-def getfile(m):
-#m is search pattern.Example:search some file include 'mRNA',
-#Then the pa is mRNA. pa should not in the boundary!
-    pa = '*%s*'%m
-    files = glob(pa)
-    print(files)
-    if len(files) == 1:
-        return files[0]
-    elif len(files) > 1:
-        return files
-    else:
-        raise SearchFileError
-    
