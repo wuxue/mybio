@@ -21,7 +21,10 @@ class Data:
             self._group[gname].append((treats.split(sep), controls.split(sep)))
 
     def parsedata(self):
-        self.data = pd.read_table(self._filename, index_col=0, comment='#')
+        data = pd.read_table(self._filename, index_col=0, comment='#')
+        columns = data.columns
+        self.anno = data[[column for column in columns if column in self.flag or column in self.norm]]
+        self.data = data[[column for column in columns if not column in self.anno.columns]]
 
     def flagdict(self, platform):
         plat = dict(affy=None, ag='.txt:gFEFlags', acm='.txt:gIsWellAboveBG_Call')
@@ -30,11 +33,16 @@ class Data:
         self.flag = {n: n + plat.get(platform) for n in self._samples}
 
     def datadict(self, platform):
-        plat = dict(affy='', agm='', agmi='')
+        plat = dict(affy='', agm='', agmi='')#TODO
         if not plat.get(platform):
             raise KeyError('%s不可用，可用参数如下:affy, agm(AgilentmRNA芯片),agmi(AgilentmiRNA芯片)' % platform)
         self.norm = {sample: sample + plat.get(platform) for sample in self._samples}
 
-    def calc(self):
+    def calc(self, process=1):
+        def worker(data, treats, controls):
+            groupamples = treats + controls
+            flags = data[[treat for treat in treats]]
+
+        res = []
         for groupname, (treats, controls) in self._group:
             pass
